@@ -1,6 +1,10 @@
+import 'package:chatty/constants.dart';
+import 'package:chatty/providers/authentication_provider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
+import 'package:provider/provider.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
@@ -22,6 +26,10 @@ class _OtpScreenState extends State<OtpScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Map;
+    final verificationId = args[Constants.verificationId] as String;
+    final phoneNumber = args[Constants.phoneNumber] as String;
+
     final defaultPinTheme = PinTheme(
       width: 56,
       height: 60,
@@ -117,4 +125,33 @@ class _OtpScreenState extends State<OtpScreen> {
       ),
     );
   }
+
+  void verifyOTPCode({
+    required String verificationId,
+    required String otpCode
+  })async{
+
+    final authProvider = context.read<AuthenticationProvider>();
+    authProvider.verifyOTPCode(
+        verificationId: verificationId,
+        otpCode: otpCode,
+        context: context,
+        onSuccess: (){
+          // 1. check if the user exists on firestore
+
+
+          // 2. if user exists , navigate to the home page
+
+
+          // * get user information from the firestore
+
+
+          // *  save user information to provider/ shared preference
+
+
+          // 3. if the user doesn't exist, navigate to user information screen
+
+        });
+  }
+
 }
