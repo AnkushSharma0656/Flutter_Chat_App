@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:chatty/authentication/otp_screen.dart';
 import 'package:chatty/main_screen/home_screen.dart';
+import 'package:chatty/providers/authentication_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'authentication/login_screen.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +16,11 @@ void main()async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
-  runApp(MyApp(savedThemeMode: savedThemeMode));
+
+  runApp(
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_)=> AuthenticationProvider()),
+    ], child: MyApp(savedThemeMode: savedThemeMode)));
 }
 
 class MyApp extends StatelessWidget {
@@ -40,7 +47,7 @@ class MyApp extends StatelessWidget {
         title: 'Chatty Chat',
         theme: theme,
         darkTheme: darkTheme,
-        home: const LoginScreen(),
+        home: const OtpScreen(),
       ),
     );
   }
