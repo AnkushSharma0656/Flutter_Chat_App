@@ -15,7 +15,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _phoneNumberController = TextEditingController();
-  final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
   Country selectedCountry = Country(
     phoneCode: "91",
     countryCode: "IND",
@@ -31,7 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose(){
     _phoneNumberController.dispose();
-    _btnController.stop();
     super.dispose();
   }
 

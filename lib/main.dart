@@ -7,6 +7,7 @@ import 'package:chatty/providers/authentication_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'authentication/login_screen.dart';
+import 'authentication/user_information_screen.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +48,7 @@ class MyApp extends StatelessWidget {
         title: 'Chatty Chat',
         theme: theme,
         darkTheme: darkTheme,
-        home: const OtpScreen(),
+        home: const UserInformationScreen(),
       ),
     );
   }
