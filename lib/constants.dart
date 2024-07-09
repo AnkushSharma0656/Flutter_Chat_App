@@ -30,7 +30,10 @@ class Constants{
   static const String sendFriendRequests = 'sendFriendRequests';
 
   static const String verificationId = 'verificationId';
+
   static const String users = 'users';
+  static const String userModel = 'userModel';
+
 
 
 }

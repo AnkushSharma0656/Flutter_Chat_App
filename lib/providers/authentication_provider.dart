@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:ui';
+
 import 'package:chatty/constants.dart';
 import 'package:chatty/models/user_model.dart';
 import 'package:chatty/utilities/global_methods.dart';
@@ -7,6 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationProvider extends ChangeNotifier{
   bool _isLoading = false;
@@ -23,7 +27,38 @@ class AuthenticationProvider extends ChangeNotifier{
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  // check if user exists
+  Future<bool> checkUserExists()async{
+    DocumentSnapshot documentSnapshot = await _firestore.collection(Constants.users).doc(_uid).get();
+    if(documentSnapshot.exists) return true;
+    return false;
+  }
+
+  // get user data from firestore
+  Future<void> getUserDataFromFireStore()async{
+    DocumentSnapshot documentSnapshot =
+        await _firestore.collection(Constants.users).doc(_uid).get();
+    _userModel = UserModel.fromMap(documentSnapshot.data() as Map<String,dynamic>);
+    notifyListeners();
+  }
+
+  // save user data to the shared preferences
+  Future<void> saveUserDataToSharedPreferences()async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.setString(Constants.userModel, jsonEncode(userModel!.toMap()));
+  }
+
+  // get data from shared preferences
+  Future<void> getUserDataFromSharedPreferences()async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String userModelString = sharedPreferences.getString(Constants.userModel) ?? '';
+    _userModel = UserModel.fromMap(jsonDecode(userModelString));
+    _uid = _userModel!.uid;
+    notifyListeners();
+  }
+
 
   // sign in with phone number
 Future<void> signInWithPhoneNumber({

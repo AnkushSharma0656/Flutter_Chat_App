@@ -1,5 +1,6 @@
 import 'package:chatty/constants.dart';
 import 'package:chatty/providers/authentication_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,6 +30,7 @@ class _OtpScreenState extends State<OtpScreen> {
     final args = ModalRoute.of(context)!.settings.arguments as Map;
     final verificationId = args[Constants.verificationId] as String;
     final phoneNumber = args[Constants.phoneNumber] as String;
+    final authProvider = context.watch<AuthenticationProvider>();
 
     final defaultPinTheme = PinTheme(
       width: 56,
@@ -77,6 +79,8 @@ class _OtpScreenState extends State<OtpScreen> {
                   setState(() {
                     otpCode = pin;
                   });
+                  //verify otp code
+                  verifyOTPCode(verificationId: verificationId,otpCode: otpCode!);
                 },
                 focusedPinTheme: defaultPinTheme.copyWith(
                   height: 68,
@@ -103,21 +107,42 @@ class _OtpScreenState extends State<OtpScreen> {
               ),
               ),
               const SizedBox(height: 30,),
-              Text(
+              authProvider.isLoading
+              ? const CircularProgressIndicator()
+              : const SizedBox.shrink(),
+              authProvider.isSuccessful
+              ? Container(
+                height: 50,
+                width: 50,
+                margin: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                    color: Colors.green,
+                    shape: BoxShape.circle
+                ),
+                child: const Icon(
+                  Icons.check,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ): const SizedBox.shrink(),
+              authProvider.isLoading
+              ?const SizedBox.shrink()
+              :Text(
                   'Didn\'t receive the code?',
                 style: GoogleFonts.openSans(
                     fontSize: 16,
                 ),
               ),
               const SizedBox(height: 30,),
-              TextButton(onPressed: (){},
+              authProvider.isLoading ?const SizedBox.shrink()
+              :TextButton(onPressed: (){
+
+              },
                   child: Text('Resend Code',
                     style: GoogleFonts.openSans(
                       fontSize: 16,
                       fontWeight : FontWeight.w600
               ),))
-
-
             ],
             ),
           ),
@@ -136,22 +161,31 @@ class _OtpScreenState extends State<OtpScreen> {
         verificationId: verificationId,
         otpCode: otpCode,
         context: context,
-        onSuccess: (){
+        onSuccess: () async {
           // 1. check if the user exists on firestore
-
-
-          // 2. if user exists , navigate to the home page
-
-
-          // * get user information from the firestore
-
-
-          // *  save user information to provider/ shared preference
-
-
-          // 3. if the user doesn't exist, navigate to user information screen
+          bool userExists = await authProvider.checkUserExists();
+          // 2. if user exists
+          if(userExists){
+            // * get user information from the firestore
+            await authProvider.getUserDataFromFireStore();
+            // *  save user information to provider/ shared preference
+            await authProvider.saveUserDataToSharedPreferences();
+            // *  navigate to the home screen
+            navigate(userExists : true);
+          }else{
+            // 3. if the user doesn't exist, navigate to user information screen
+            navigate(userExists : false);
+          }
 
         });
+  }
+
+  void navigate({required bool userExists}) {
+    if(userExists){
+      Navigator.pushNamedAndRemoveUntil(context, Constants.homeScreen, (route) => false);
+    }else{
+      Navigator.pushNamed(context, Constants.userInformationScreen);
+    }
   }
 
 }
