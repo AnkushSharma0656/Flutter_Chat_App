@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         routes: {
           Constants.loginScreen: (context) => const LoginScreen(),
           Constants.otpScreen: (context) => const OtpScreen(),
-          Constants.userInformationScreen: (context) => const UserInformationScreen(),
+          Constants.userInformationScreen: (context) =>  UserInformationScreen(),
         },
       ),
     );

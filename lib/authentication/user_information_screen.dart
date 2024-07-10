@@ -37,7 +37,7 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
     );
 
     //crop image
-    cropImage(finalFileImage!.path);
+    cropImage(finalFileImage?.path);
 
   }
 
@@ -49,21 +49,46 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
         maxWidth: 800,
         compressQuality: 90
       );
-     popTheDialog();
 
      if(croppedFile != null){
        setState(() {
          finalFileImage = File(croppedFile.path);
        });
      }else{
-       popTheDialog();
+       // popTheDialog();
      }
     }
 
   }
 
-  popTheDialog(){
-    Navigator.of(context).pop();
+
+  void showBottomSheet(){
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => SizedBox(
+          height: MediaQuery.of(context).size.height/7,
+          child: Column(
+            children: [
+              ListTile(
+                onTap: (){
+                  selectImage(true);
+                  Navigator.of(context).pop();
+                },
+                leading: const Icon(Icons.camera),
+                title: const Text('Camera'),
+              ),
+              ListTile(
+                onTap: (){
+                  selectImage(false);
+                  Navigator.of(context).pop();
+                },
+                leading: const Icon(Icons.image),
+                title: const Text('Gallery'),
+              )
+            ],
+          ),
+        )
+    );
   }
 
 
@@ -80,19 +105,47 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
         child: Column(
           children: [
-           const Stack(
+            finalFileImage == null ?
+            Stack(
               children: [
-                CircleAvatar(
+               const CircleAvatar(
                   radius: 60,
                   backgroundImage: AssetImage(AssetsManager.userImage),
                 ),
                 Positioned(
                   bottom: 0,
                     right: 0,
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.green,
-                      child: Icon(Icons.camera_alt,color: Colors.white,size: 20,),
+                    child: InkWell(
+                      onTap: (){
+                        showBottomSheet();
+                      },
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.green,
+                        child: Icon(Icons.camera_alt,color: Colors.white,size: 20,),
+                      ),
+                    )
+                ),
+              ],
+            )
+            : Stack(
+              children: [
+                CircleAvatar(
+                  radius: 60,
+                  backgroundImage: FileImage(File(finalFileImage!.path)),
+                ),
+                Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: InkWell(
+                      onTap: (){
+                        showBottomSheet();
+                      },
+                      child: const CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.green,
+                        child: Icon(Icons.camera_alt,color: Colors.white,size: 20,),
+                      ),
                     )
                 ),
               ],
