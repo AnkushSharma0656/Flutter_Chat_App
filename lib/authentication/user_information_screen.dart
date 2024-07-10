@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:chatty/utilities/assets_manager.dart';
+import 'package:chatty/utilities/global_methods.dart';
+import 'package:chatty/widgets/app_bar_back_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
 class UserInformationScreen extends StatefulWidget {
@@ -13,6 +18,8 @@ class UserInformationScreen extends StatefulWidget {
 class _UserInformationScreenState extends State<UserInformationScreen> {
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
   final _nameController = TextEditingController();
+  File? finalFileImage;
+  String userImage = '';
 
   @override
   void dispose(){
@@ -21,10 +28,53 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
     super.dispose();
   }
 
+  void selectImage(bool fromCamera)async{
+    finalFileImage = await pickImage(
+        fromCamera: fromCamera,
+        onFail: (String message){
+          showSnackBar(context, message);
+        }
+    );
+
+    //crop image
+    cropImage(finalFileImage!.path);
+
+  }
+
+  void cropImage(filePath)async{
+    if(filePath != null ){
+     CroppedFile? croppedFile = await ImageCropper().cropImage(
+        sourcePath: filePath,
+        maxHeight: 800,
+        maxWidth: 800,
+        compressQuality: 90
+      );
+     popTheDialog();
+
+     if(croppedFile != null){
+       setState(() {
+         finalFileImage = File(croppedFile.path);
+       });
+     }else{
+       popTheDialog();
+     }
+    }
+
+  }
+
+  popTheDialog(){
+    Navigator.of(context).pop();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true,title: Text('User Information'),),
+      appBar: AppBar(
+        leading: AppBarBackButton(onPressed: (){
+          Navigator.pop(context);
+        },),
+        centerTitle: true,title: Text('User Information'),),
       body: Center(
         child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
