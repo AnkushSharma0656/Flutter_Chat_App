@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:chatty/constants.dart';
@@ -129,9 +130,54 @@ Future<void> signInWithPhoneNumber({
       showSnackBar(context, e.toString());
     });
 
-
   }
 
+  // save user data to firestore
+void saveUserDataToFireStore({
+  required UserModel userModel,
+  required File? fileImage,
+  required Function onSuccess,
+  required Function onFail,
+})async{
+
+    _isLoading = true;
+    notifyListeners();
+
+    try{
+      if(fileImage != null){
+        // upload image to fireStore
+        String imageUrl = await storeFileToStorage(file: fileImage, reference: '${Constants.userImages}/${userModel.uid}');
+        userModel.image = imageUrl;
+      }
+      userModel.lastSeen = DateTime.now().microsecondsSinceEpoch.toString();
+      userModel.createdAt = DateTime.now().microsecondsSinceEpoch.toString();
+
+      _userModel = userModel;
+      _uid = userModel.uid;
+
+      // save user data to fireStore
+      await _firestore.collection(Constants.users).doc(userModel.uid).set(userModel.toMap());
+
+      _isLoading = false;
+      onSuccess();
+      notifyListeners();
+    }on FirebaseException catch(e){
+      _isLoading = false;
+      notifyListeners();
+      onFail(e.toString());
+    }
+}
+
+// store file to fire store  and return file Url
+Future<String> storeFileToStorage({
+    required File file,
+    required String reference
+})async{
+    UploadTask uploadTask = _storage.ref().child(reference).putFile(file);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    String fileUrl = await taskSnapshot.ref.getDownloadURL();
+    return fileUrl;
+}
 
 
 }

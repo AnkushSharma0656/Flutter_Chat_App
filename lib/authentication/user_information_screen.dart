@@ -1,11 +1,17 @@
 import 'dart:io';
 
+import 'package:chatty/constants.dart';
+import 'package:chatty/models/user_model.dart';
+import 'package:chatty/providers/authentication_provider.dart';
 import 'package:chatty/utilities/assets_manager.dart';
 import 'package:chatty/utilities/global_methods.dart';
 import 'package:chatty/widgets/app_bar_back_button.dart';
+import 'package:chatty/widgets/display_user_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:provider/provider.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
 class UserInformationScreen extends StatefulWidget {
@@ -37,11 +43,11 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
     );
 
     //crop image
-    cropImage(finalFileImage?.path);
-
+  await cropImage(finalFileImage?.path);
+  popContext();
   }
 
-  void cropImage(filePath)async{
+ Future<void> cropImage(filePath)async{
     if(filePath != null ){
      CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: filePath,
@@ -54,8 +60,6 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
        setState(() {
          finalFileImage = File(croppedFile.path);
        });
-     }else{
-       // popTheDialog();
      }
     }
 
@@ -72,7 +76,6 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
               ListTile(
                 onTap: (){
                   selectImage(true);
-                  Navigator.of(context).pop();
                 },
                 leading: const Icon(Icons.camera),
                 title: const Text('Camera'),
@@ -80,7 +83,6 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
               ListTile(
                 onTap: (){
                   selectImage(false);
-                  Navigator.of(context).pop();
                 },
                 leading: const Icon(Icons.image),
                 title: const Text('Gallery'),
@@ -105,51 +107,9 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
         child: Column(
           children: [
-            finalFileImage == null ?
-            Stack(
-              children: [
-               const CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage(AssetsManager.userImage),
-                ),
-                Positioned(
-                  bottom: 0,
-                    right: 0,
-                    child: InkWell(
-                      onTap: (){
-                        showBottomSheet();
-                      },
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.green,
-                        child: Icon(Icons.camera_alt,color: Colors.white,size: 20,),
-                      ),
-                    )
-                ),
-              ],
-            )
-            : Stack(
-              children: [
-                CircleAvatar(
-                  radius: 60,
-                  backgroundImage: FileImage(File(finalFileImage!.path)),
-                ),
-                Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: InkWell(
-                      onTap: (){
-                        showBottomSheet();
-                      },
-                      child: const CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.green,
-                        child: Icon(Icons.camera_alt,color: Colors.white,size: 20,),
-                      ),
-                    )
-                ),
-              ],
-            ),
+            DisplayUserImage(finalFileImage: finalFileImage,radius: 60,onPressed: (){
+              showBottomSheet();
+            },),
             const SizedBox(height: 30,),
             TextField(
               controller: _nameController,
@@ -171,7 +131,13 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
                 errorColor: Colors.red,
                 color: Theme.of(context).primaryColor,
                 onPressed: (){
-                  // save the user information screen
+                  if(_nameController.text.isEmpty || _nameController.text.length < 3){
+                    showSnackBar(context, 'Please enter your name');
+                    _btnController.reset();
+                    return;
+                  }
+                  // save the user data to firestore
+                  saveUserDataToFireStore();
                 },
                 child: const Text(
                     'Continue',
@@ -188,5 +154,49 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
         ),
       ),),
     );
+  }
+
+  // save user data to fireStore
+  void saveUserDataToFireStore()async{
+    final authProvider = context.read<AuthenticationProvider>();
+    UserModel userModel = UserModel(
+        uid: authProvider.uid!,
+        name: _nameController.text.trim(),
+        phoneNumber: authProvider.phoneNumber!,
+        image: '',
+        token: '',
+        aboutMe: 'Hey there, I\'m using Chatty Chat',
+        lastSeen: '',
+        createdAt: '',
+        isOnline: true,
+        friendsUIDs: [],
+        friendRequestUIDS: [],
+        sendFriendRequests: []
+    );
+    authProvider.saveUserDataToFireStore(
+        userModel: userModel,
+        fileImage: finalFileImage,
+        onSuccess: ()async {
+          _btnController.success();
+          // save user data to shared preferences
+          await authProvider.saveUserDataToSharedPreferences();
+          navigateToHomeScreen();
+        },
+        onFail: ()async{
+          _btnController.error();
+          showSnackBar(context, 'Failed to save the user data');
+           await Future.delayed(const Duration(seconds: 1));
+          _btnController.reset();
+
+        }
+    );
+  }
+
+  void navigateToHomeScreen() {
+    Navigator.of(context).pushNamedAndRemoveUntil(Constants.homeScreen, (route) => false);
+  }
+
+  void popContext() {
+    Navigator.pop(context);
   }
 }

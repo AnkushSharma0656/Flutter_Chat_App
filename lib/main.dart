@@ -49,11 +49,12 @@ class MyApp extends StatelessWidget {
         title: 'Chatty Chat',
         theme: theme,
         darkTheme: darkTheme,
-        initialRoute: Constants.userInformationScreen,
+        initialRoute: Constants.loginScreen,
         routes: {
           Constants.loginScreen: (context) => const LoginScreen(),
           Constants.otpScreen: (context) => const OtpScreen(),
           Constants.userInformationScreen: (context) =>  UserInformationScreen(),
+          Constants.homeScreen : (context) => HomeScreen()
         },
       ),
     );
