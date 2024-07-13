@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:chatty/authentication/landing_screen.dart';
 import 'package:chatty/authentication/otp_screen.dart';
 import 'package:chatty/constants.dart';
 import 'package:chatty/main_screen/home_screen.dart';
@@ -49,8 +50,9 @@ class MyApp extends StatelessWidget {
         title: 'Chatty Chat',
         theme: theme,
         darkTheme: darkTheme,
-        initialRoute: Constants.loginScreen,
+        initialRoute: Constants.landingScreen,
         routes: {
+          Constants.landingScreen: (context) => const LandingScreen(),
           Constants.loginScreen: (context) => const LoginScreen(),
           Constants.otpScreen: (context) => const OtpScreen(),
           Constants.userInformationScreen: (context) =>  UserInformationScreen(),

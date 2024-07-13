@@ -2,9 +2,12 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:chatty/main_screen/chats_list_screen.dart';
 import 'package:chatty/main_screen/groups_screen.dart';
 import 'package:chatty/main_screen/people_screen.dart';
+import 'package:chatty/providers/authentication_provider.dart';
+import 'package:chatty/utilities/global_methods.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chatty/utilities/assets_manager.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,16 +27,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthenticationProvider>();
     return Scaffold(
          appBar: AppBar(
            title: const Text("Chatty Chat"),
-           actions: const [
+           actions:  [
              Padding(
-               padding: EdgeInsets.all(8.0),
-               child: CircleAvatar(
-                 radius: 20,
-                 backgroundImage: AssetImage(AssetsManager.userImage),
-               ),
+               padding: const EdgeInsets.all(8.0),
+               child: userImageWidget(imageUrl: authProvider.userModel!.image,radius: 20,onTap: (){
+                 //navigate to user profile
+
+               })
              )
            ],
          ),

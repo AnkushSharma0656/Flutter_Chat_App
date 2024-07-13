@@ -1,11 +1,30 @@
 import 'dart:io';
 
+import 'package:chatty/utilities/assets_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 void showSnackBar(BuildContext context, String message){
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+}
+
+Widget userImageWidget({
+  required String imageUrl,
+  required double radius,
+  required Function() onTap
+}){
+  return GestureDetector(
+    onTap: onTap,
+    child: CircleAvatar(
+      radius: radius,
+      backgroundColor: Colors.grey[300],
+      backgroundImage: imageUrl.isNotEmpty
+        ? NetworkImage(imageUrl)
+          : const AssetImage(AssetsManager.userImage) as ImageProvider
+    ),
+  );
+
 }
 
 // pic image from gallery or camera
