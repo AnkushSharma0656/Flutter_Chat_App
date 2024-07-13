@@ -200,5 +200,18 @@ Future<String> storeFileToStorage({
     return fileUrl;
 }
 
+// get user stream
+Stream<DocumentSnapshot> userStream({required String userID}){
+    return _firestore.collection(Constants.users).doc(userID).snapshots();
+}
+
+// logout
+
+ Future logoutUser() async{
+    await _auth.signOut();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.clear();
+    notifyListeners();
+  }
 
 }

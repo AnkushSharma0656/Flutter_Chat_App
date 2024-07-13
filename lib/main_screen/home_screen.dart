@@ -1,4 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:chatty/constants.dart';
 import 'package:chatty/main_screen/chats_list_screen.dart';
 import 'package:chatty/main_screen/groups_screen.dart';
 import 'package:chatty/main_screen/people_screen.dart';
@@ -34,8 +35,16 @@ class _HomeScreenState extends State<HomeScreen> {
            actions:  [
              Padding(
                padding: const EdgeInsets.all(8.0),
-               child: userImageWidget(imageUrl: authProvider.userModel!.image,radius: 20,onTap: (){
-                 //navigate to user profile
+               child: userImageWidget(
+                   imageUrl: authProvider.userModel!.image,
+                   radius: 20,
+                   onTap: (){
+                   //navigate to user profile with uid as arguments
+                     Navigator.pushNamed(
+                         context,
+                         Constants.profileScreen,
+                         arguments: authProvider.userModel!.uid
+                     );
 
                })
              )

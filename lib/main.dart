@@ -5,6 +5,7 @@ import 'package:chatty/authentication/landing_screen.dart';
 import 'package:chatty/authentication/otp_screen.dart';
 import 'package:chatty/constants.dart';
 import 'package:chatty/main_screen/home_screen.dart';
+import 'package:chatty/main_screen/profile_screen.dart';
 import 'package:chatty/providers/authentication_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -56,7 +57,8 @@ class MyApp extends StatelessWidget {
           Constants.loginScreen: (context) => const LoginScreen(),
           Constants.otpScreen: (context) => const OtpScreen(),
           Constants.userInformationScreen: (context) =>  UserInformationScreen(),
-          Constants.homeScreen : (context) => HomeScreen()
+          Constants.homeScreen : (context) => HomeScreen(),
+          Constants.profileScreen : (context) => ProfileScreen()
         },
       ),
     );
