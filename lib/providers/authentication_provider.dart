@@ -208,7 +208,80 @@ Stream<DocumentSnapshot> userStream({required String userID}){
   Stream<QuerySnapshot> getAllUsersStream({required String userID}){
     return _firestore.collection(Constants.users).where(Constants.uid, isNotEqualTo: userID).snapshots();
   }
+  // send friend request list
+  Future<void> sendFriendRequest({
+  required String friendID
+})async{
+    try{
+      // add our uid to friend request list
+      await _firestore.collection(Constants.users).doc(friendID).update({
+        Constants.friendRequestUIDS: FieldValue.arrayUnion([_uid])});
+      // add friend uid to our friend requests send list
+      await _firestore.collection(Constants.users).doc(friendID).update({
+        Constants.sendFriendRequests: FieldValue.arrayUnion([_uid])});
 
+    }on FirebaseException catch(e){
+      print(e.toString()+ 'send friend request error');
+    }
+  }
+
+
+  Future<void> cancelFriendRequest({
+    required String friendID
+  })async{
+    try{
+      // remove uid to friend request list
+      await _firestore.collection(Constants.users).doc(friendID).update({
+        Constants.friendRequestUIDS: FieldValue.arrayRemove([_uid])});
+      // remove friend uid to our friend requests send list
+      await _firestore.collection(Constants.users).doc(friendID).update({
+        Constants.sendFriendRequests: FieldValue.arrayRemove([_uid])});
+
+    }on FirebaseException catch(e){
+      print(e.toString()+ 'cancelled friend request error');
+    }
+  }
+
+  Future<void> acceptFriendRequest({
+    required String friendID
+  })async{
+    try{
+      // add our uid to friend  list
+      await _firestore.collection(Constants.users).doc(friendID).update({
+        Constants.friendsUIDs: FieldValue.arrayUnion([_uid])});
+
+      // add friend uid to our  friend list
+      await _firestore.collection(Constants.users).doc(_uid).update({
+        Constants.friendsUIDs: FieldValue.arrayUnion([friendID])});
+
+      // remove our uid from friend request list
+      await _firestore.collection(Constants.users).doc(friendID).update({
+        Constants.sendFriendRequests: FieldValue.arrayRemove([_uid])});
+
+      // remove friend uid from our friend request sent list
+      await _firestore.collection(Constants.users).doc(_uid).update({
+        Constants.friendRequestUIDS: FieldValue.arrayRemove([friendID])});
+
+    }on FirebaseException catch(e){
+      print(e.toString()+ 'accept friend request error');
+    }
+  }
+  // remove friends
+  Future<void> removeFriend({
+    required String friendID
+  })async{
+    try{
+      // remove uid from friend  list
+      await _firestore.collection(Constants.users).doc(friendID).update({
+        Constants.friendsUIDs: FieldValue.arrayRemove([_uid])});
+      // remove uid from our friend  list
+      await _firestore.collection(Constants.users).doc(_uid).update({
+        Constants.friendsUIDs: FieldValue.arrayRemove([friendID])});
+
+    }on FirebaseException catch(e){
+      print(e.toString()+ 'removeFriend error');
+    }
+  }
 // logout
 
  Future logoutUser() async{
@@ -217,5 +290,7 @@ Stream<DocumentSnapshot> userStream({required String userID}){
     await sharedPreferences.clear();
     notifyListeners();
   }
+
+
 
 }
