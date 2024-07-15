@@ -204,6 +204,10 @@ Future<String> storeFileToStorage({
 Stream<DocumentSnapshot> userStream({required String userID}){
     return _firestore.collection(Constants.users).doc(userID).snapshots();
 }
+// get all user stream
+  Stream<QuerySnapshot> getAllUsersStream({required String userID}){
+    return _firestore.collection(Constants.users).where(Constants.uid, isNotEqualTo: userID).snapshots();
+  }
 
 // logout
 

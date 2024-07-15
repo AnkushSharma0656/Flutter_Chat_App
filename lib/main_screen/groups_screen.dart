@@ -9,6 +9,6 @@ class GroupsScreen extends StatefulWidget {
 class _GroupsScreenState extends State<GroupsScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: const Center(child:  Text("Groups screen"),),);
+    return Scaffold(body: SafeArea(child: const Center(child:  Text("Groups screen"),)),);
   }
 }

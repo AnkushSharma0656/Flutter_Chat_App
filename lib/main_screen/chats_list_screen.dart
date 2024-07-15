@@ -10,6 +10,6 @@ class ChatsListScreen extends StatefulWidget {
 class _ChatsListScreenState extends State<ChatsListScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: const Center(child:  Text("chats"),),);
+    return Scaffold(body: SafeArea(child: const Center(child:  Text("chats"),)),);
   }
 }
