@@ -233,6 +233,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             buildElevatedButton(
                 onPressed: ()async{
                  //navigate to chat screen
+                  Navigator.pushNamed(
+                      context,
+                      Constants.chatScreen,
+                      arguments: {
+                        Constants.contactUID : userModel.uid,
+                        Constants.contactName  : userModel.name,
+                        Constants.contactImages  : userModel.image,
+                        Constants.groupId  : ''
+                      }
+                  );
                 },
                 label :'Chat',
                 width: MediaQuery.of(context).size.width*0.4,
