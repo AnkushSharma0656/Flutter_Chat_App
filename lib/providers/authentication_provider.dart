@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
@@ -282,6 +283,38 @@ Stream<DocumentSnapshot> userStream({required String userID}){
       print(e.toString()+ 'removeFriend error');
     }
   }
+  // get list of friends
+
+  Future<List<UserModel>> getFriendsList(String uid)async{
+    List<UserModel> friendsList = [];
+    DocumentSnapshot documentSnapshot = await _firestore.collection(Constants.users).doc(uid).get();
+    List<dynamic> friendsUIDs = documentSnapshot.get(Constants.friendsUIDs);
+    for(String friendsUID in friendsUIDs){
+      DocumentSnapshot documentSnapshot =
+          await _firestore.collection(Constants.users).doc(friendsUID).get();
+      UserModel friend = UserModel.fromMap(documentSnapshot.data() as Map<String , dynamic>);
+      friendsList.add(friend);
+    }
+    return friendsList;
+  }
+
+  // get list of friend request
+  Future<List<UserModel>> getFriendRequestsList(String uid)async{
+    List<UserModel> friendRequestsList = [];
+    DocumentSnapshot documentSnapshot = await _firestore.collection(Constants.users).doc(uid).get();
+    List<dynamic> friendRequestsUIDs = documentSnapshot.get(Constants.friendRequestUIDS);
+    for(String friendRequestsUID in friendRequestsUIDs){
+      DocumentSnapshot documentSnapshot =
+      await _firestore.collection(Constants.users).doc(friendRequestsUID).get();
+      UserModel friendRequests = UserModel.fromMap(documentSnapshot.data() as Map<String , dynamic>);
+      friendRequestsList.add(friendRequests);
+    }
+    return friendRequestsList;
+  }
+
+
+
+
 // logout
 
  Future logoutUser() async{

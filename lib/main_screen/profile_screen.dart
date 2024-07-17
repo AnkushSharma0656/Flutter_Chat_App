@@ -140,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if(currentUser.uid == userModel.uid && userModel.friendRequestUIDS.isNotEmpty){
       return buildElevatedButton(
           onPressed: (){
-
+            Navigator.pushNamed(context, Constants.friendRequestsScreen);
           },
           label: 'View Friend Requests',
           width: MediaQuery.of(context).size.width*0.7,
@@ -158,6 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if(currentUser.uid == userModel.uid && userModel.friendsUIDs.isNotEmpty){
       return  buildElevatedButton(
           onPressed: (){
+            Navigator.pushNamed(context, Constants.friendsScreen);
           },
           label:'View Friends',
           width: MediaQuery.of(context).size.width*0.7,
@@ -212,6 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             }, child: const Text('Cancel')),
                         TextButton(
                             onPressed: ()async{
+                              Navigator.pop(context);
                               await context.read<AuthenticationProvider>().removeFriend(
                                   friendID: userModel.uid).whenComplete((){
                                 showSnackBar(context, 'You are no longer friend');

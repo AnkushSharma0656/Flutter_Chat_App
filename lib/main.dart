@@ -4,6 +4,8 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:chatty/authentication/landing_screen.dart';
 import 'package:chatty/authentication/otp_screen.dart';
 import 'package:chatty/constants.dart';
+import 'package:chatty/main_screen/friends_requests_screen.dart';
+import 'package:chatty/main_screen/friends_screen.dart';
 import 'package:chatty/main_screen/home_screen.dart';
 import 'package:chatty/main_screen/profile_screen.dart';
 import 'package:chatty/main_screen/settings_screen.dart';
@@ -60,7 +62,9 @@ class MyApp extends StatelessWidget {
           Constants.userInformationScreen: (context) =>  UserInformationScreen(),
           Constants.homeScreen : (context) => HomeScreen(),
           Constants.profileScreen : (context) => ProfileScreen(),
-          Constants.settingsScreen : (context) => SettingsScreen()
+          Constants.settingsScreen : (context) => SettingsScreen(),
+          Constants.friendsScreen : (context) => FriendsScreen(),
+          Constants.friendRequestsScreen : (context) => FriendRequestScreen()
 
         },
       ),

@@ -39,3 +39,9 @@ class Constants{
 
 
 }
+
+enum FriendViewType{
+  friends,
+  friendRequests,
+  groupView
+}
