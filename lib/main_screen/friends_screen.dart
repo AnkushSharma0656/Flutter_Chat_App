@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:chatty/constants.dart';
 import 'package:chatty/widgets/app_bar_back_button.dart';
 import 'package:chatty/widgets/friends_list.dart';

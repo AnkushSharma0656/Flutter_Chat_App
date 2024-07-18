@@ -1,4 +1,5 @@
 import 'package:chatty/constants.dart';
+import 'package:chatty/widgets/chat_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -21,6 +22,9 @@ class _ChatScreenState extends State<ChatScreen> {
     final isGroupChat = groupId.isNotEmpty ? true : false;
 
     return Scaffold(
+      appBar: AppBar(
+        title: ChatAppBar(contactId: contactUID),
+      ),
         body: Column(
           children: [
 
