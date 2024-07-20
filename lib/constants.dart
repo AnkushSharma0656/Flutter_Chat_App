@@ -36,10 +36,23 @@ class Constants{
   static const String userImages = 'userImages';
   static const String userModel = 'userModel';
 
-  static const String contactUID = 'contactUID';
+  static const String contactId = 'contactId';
   static const String contactName = 'contactName';
   static const String contactImages = 'contactImages';
   static const String groupId = 'groupId';
+
+  static const String senderUID = 'senderUID';
+  static const String senderName = 'senderName';
+  static const String senderImage = 'senderImage';
+  static const String contactUID = 'contactUID';
+  static const String message = 'message';
+  static const String messageType = 'messageType';
+  static const String timeSent = 'timeSent';
+  static const String messageId = 'messageId';
+  static const String isSeen = 'isSeen';
+  static const String repliedMessage = 'repliedMessage';
+  static const String repliedTo = 'repliedTo';
+  static const String repliedMessageType = 'repliedMessageType';
 
 
 
@@ -49,4 +62,29 @@ enum FriendViewType{
   friends,
   friendRequests,
   groupView
+}
+
+enum MessageEnum{
+  text,
+  image,
+  video,
+  audio
+}
+
+// extension convertMessageEnumToString on String
+extension MessageEnumExtension on String{
+  MessageEnum toMessageEnum(){
+    switch(this){
+      case 'text':
+        return MessageEnum.text;
+      case 'image':
+        return MessageEnum.image;
+      case 'video':
+        return MessageEnum.video;
+      case 'audio':
+        return MessageEnum.audio;
+      default:
+        return MessageEnum.text;
+    }
+  }
 }
