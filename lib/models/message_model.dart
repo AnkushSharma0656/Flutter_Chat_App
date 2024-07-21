@@ -56,7 +56,7 @@ factory MessageModel.fromMap(Map<String,dynamic>map){
         messageType: map[Constants.messageType] .toString().toMessageEnum(),
         timeSent: DateTime.fromMicrosecondsSinceEpoch(map[Constants.timeSent]),
         messageId: map[Constants.messageId] ?? '',
-        isSeen: map[Constants.isSeen] ?? '',
+        isSeen: map[Constants.isSeen] ?? false,
         repliedMessage: map[Constants.repliedMessage] ?? '',
         repliedTo: map[Constants.repliedTo] ?? '',
         repliedMessageType: map[Constants.repliedMessageType].toString().toMessageEnum()
