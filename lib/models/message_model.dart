@@ -53,7 +53,7 @@ factory MessageModel.fromMap(Map<String,dynamic>map){
         senderImage: map[Constants.senderImage] ?? '',
         contactUID: map[Constants.contactUID] ?? '',
         message: map[Constants.message] ?? '',
-        messageType: map[Constants.messageType] .toString().toMessageEnum(),
+        messageType: map[Constants.messageType].toString().toMessageEnum(),
         timeSent: DateTime.fromMicrosecondsSinceEpoch(map[Constants.timeSent]),
         messageId: map[Constants.messageId] ?? '',
         isSeen: map[Constants.isSeen] ?? false,

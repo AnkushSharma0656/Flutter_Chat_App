@@ -1,4 +1,5 @@
 import 'package:chatty/constants.dart';
+import 'package:chatty/models/last_message_model.dart';
 import 'package:chatty/models/message_model.dart';
 import 'package:chatty/models/message_reply_model.dart';
 import 'package:chatty/models/user_model.dart';
@@ -69,13 +70,111 @@ class ChatProvider extends ChangeNotifier{
 
      }else{
        // handle contact message
+         await  handleContactMessage(
+         messageModel: messageModel,
+         contactUID: contactUID,
+         contactName: contactName,
+         contactImage : contactImage,
+         onSuccess : onSuccess,
+         onError : onError
+       );
+
+      // set message reply model to null
+       setMessageReplyModel(null);
 
      }
-
 
    }catch(e){
      onError(e.toString());
    }
   }
 
+  Future<void> handleContactMessage({
+    required MessageModel messageModel,
+    required String contactUID,
+    required String contactName,
+    required String contactImage,
+    required Function onSuccess,
+    required Function(String p1) onError}) async{
+
+    try{
+      // 1. initialize last message for the sender
+      final senderLastMessage = LastMessageModel(
+          senderUID: messageModel.senderUID,
+          contactUID: contactUID,
+          contactName: contactName,
+          contactImage: contactImage,
+          message: messageModel.message,
+          messageType: messageModel.messageType,
+          timeStamp: messageModel.timeSent,
+          isSeen: false
+      );
+
+      // 2. initilize last message for the contact
+
+      final contactLastMessage = senderLastMessage.copyWith(
+          contactUID: messageModel.senderUID,
+          contactName: messageModel.senderName,
+          contactImage: messageModel.senderImage
+      );
+
+
+      await _firestore.runTransaction((transaction)async{
+        // 3. send message to sender firestore location
+        transaction.set(
+            _firestore.collection(Constants.users)
+                .doc(messageModel.senderUID)
+                .collection(Constants.chats)
+                .doc(contactUID)
+                .collection(Constants.messages)
+                .doc(messageModel.messageId),
+          messageModel.toMap()
+        );
+        // 4. send message to contact firestore location
+        transaction.set(
+            _firestore.collection(Constants.users)
+                .doc(contactUID)
+                .collection(Constants.chats)
+                .doc(messageModel.senderUID)
+                .collection(Constants.messages)
+                .doc(messageModel.messageId),
+            messageModel.toMap()
+        );
+
+        // 5. send the last message to sender firestore location
+        transaction.set(
+            _firestore.collection(Constants.users)
+                .doc(messageModel.senderUID)
+                .collection(Constants.chats)
+                .doc(contactUID),
+            senderLastMessage.toMap()
+        );
+
+
+
+        // 6. send the last message to contact firestore location
+        transaction.set(
+            _firestore.collection(Constants.users)
+                .doc(contactUID)
+                .collection(Constants.chats)
+                .doc(messageModel.senderUID),
+            contactLastMessage.toMap()
+        );
+
+
+      });
+
+
+      // 7. call onSuccess
+      onSuccess();
+
+    }on FirebaseException catch (e){
+      onError(e.message ?? e.toString());
+    }catch(e){
+      onError(e.toString());
+    }
+
+  }
+
 }
+

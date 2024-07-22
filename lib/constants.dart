@@ -56,6 +56,10 @@ class Constants{
   static const String isMe = 'isMe';
 
 
+  static const String lastMessage = 'lastMessage';
+  static const String chats = 'chats';
+  static const String messages = 'messages';
+
 
 
 }
