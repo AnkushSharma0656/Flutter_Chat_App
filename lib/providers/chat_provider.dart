@@ -98,6 +98,9 @@ class ChatProvider extends ChangeNotifier{
     required Function(String p1) onError}) async{
 
     try{
+      // 0. contact messageModel
+      final contactMessageModel = messageModel.copyWith(userId: messageModel.senderUID);
+
       // 1. initialize last message for the sender
       final senderLastMessage = LastMessageModel(
           senderUID: messageModel.senderUID,
@@ -138,7 +141,7 @@ class ChatProvider extends ChangeNotifier{
                 .doc(messageModel.senderUID)
                 .collection(Constants.messages)
                 .doc(messageModel.messageId),
-            messageModel.toMap()
+            contactMessageModel.toMap()
         );
 
         // 5. send the last message to sender firestore location
@@ -174,6 +177,21 @@ class ChatProvider extends ChangeNotifier{
       onError(e.toString());
     }
 
+  }
+
+  // get chatList Screen
+  Stream<List<LastMessageModel>> getChatListStream(String userId){
+   return _firestore
+       .collection(Constants.users)
+       .doc(userId)
+       .collection(Constants.chats)
+       .orderBy(Constants.timeSent,descending: true)
+       .snapshots()
+       .map((snapshot) {
+         return snapshot.docs.map((doc) {
+           return LastMessageModel.fromMap(doc.data());
+         }).toList();
+   });
   }
 
 }

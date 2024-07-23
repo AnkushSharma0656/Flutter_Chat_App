@@ -62,4 +62,20 @@ factory MessageModel.fromMap(Map<String,dynamic>map){
         repliedMessageType: map[Constants.repliedMessageType].toString().toMessageEnum()
     );
 }
+ copyWith({required String userId}){
+    return MessageModel(
+        senderUID: senderUID,
+        senderName: senderName,
+        senderImage: senderImage,
+        contactUID: userId,
+        message: message,
+        messageType: messageType,
+        timeSent: timeSent,
+        messageId: messageId,
+        isSeen: isSeen,
+        repliedMessage: repliedMessage,
+        repliedTo: repliedTo,
+        repliedMessageType: repliedMessageType
+    );
+ }
 }
