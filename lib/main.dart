@@ -11,6 +11,7 @@ import 'package:chatty/main_screen/home_screen.dart';
 import 'package:chatty/main_screen/profile_screen.dart';
 import 'package:chatty/main_screen/settings_screen.dart';
 import 'package:chatty/providers/authentication_provider.dart';
+import 'package:chatty/providers/chat_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'authentication/login_screen.dart';
@@ -27,7 +28,8 @@ void main()async {
 
   runApp(
     MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_)=> AuthenticationProvider()),
+      ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
+      ChangeNotifierProvider(create: (_) => ChatProvider()),
     ], child: MyApp(savedThemeMode: savedThemeMode)));
 }
 

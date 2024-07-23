@@ -15,7 +15,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     //get argument pass from previous screen
     final arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    final contactId = arguments[Constants.contactId];
+    final contactUID = arguments[Constants.contactUID];
     final contactName = arguments[Constants.contactName];
     final contactImages = arguments[Constants.contactImages];
     final groupId = arguments[Constants.groupId];
@@ -24,7 +24,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: ChatAppBar(contactId: contactId),
+        title: ChatAppBar(contactUID: contactUID),
       ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -36,7 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
                    itemBuilder: (context,index){
                  return ListTile(title: Text('message $index'),);
                })),
-              BottomChatField(contactId: contactId, contactName: contactName, contactImage: contactImages, groupId: groupId,)
+              BottomChatField(contactUID: contactUID, contactName: contactName, contactImage: contactImages, groupId: groupId,)
             ],
           ),
         ),

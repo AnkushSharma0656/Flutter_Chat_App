@@ -1,9 +1,15 @@
+import 'package:chatty/constants.dart';
+import 'package:chatty/providers/authentication_provider.dart';
+import 'package:chatty/providers/chat_provider.dart';
+import 'package:chatty/utilities/global_methods.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class BottomChatField extends StatefulWidget {
-  const BottomChatField({Key? key,required this.contactId, required this.contactName, required this.contactImage, required this.groupId}) : super(key: key);
-  final String contactId;
+  const BottomChatField({Key? key,required this.contactUID, required this.contactName, required this.contactImage, required this.groupId}) : super(key: key);
+  final String contactUID;
   final String contactName;
   final String contactImage;
   final String groupId;
@@ -13,6 +19,43 @@ class BottomChatField extends StatefulWidget {
 }
 
 class _BottomChatFieldState extends State<BottomChatField> {
+  late TextEditingController _textEditingController;
+  late FocusNode _focusNode;
+  @override
+  void initState() {
+    // TODO: implement initState
+    _textEditingController = TextEditingController();
+    _focusNode = FocusNode();
+    super.initState();
+  }
+  @override
+  void dispose(){
+    _textEditingController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+  // send text message to firestore
+  void sendTextMessage(){
+    final currentUser = context.read<AuthenticationProvider>().userModel;
+    final chatProvider = context.read<ChatProvider>();
+    chatProvider.sendTextMessage(
+        sender: currentUser!,
+        contactUID: widget.contactUID,
+        contactName: widget.contactName,
+        contactImage: widget.contactImage,
+        message: _textEditingController.text,
+        messageType: MessageEnum.text,
+        groupId: widget.groupId,
+        onSuccess: (){
+          _textEditingController.clear();
+          _focusNode.requestFocus();
+        },
+        onError: (error){
+          showSnackBar(context, error);
+        }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,25 +83,30 @@ class _BottomChatFieldState extends State<BottomChatField> {
               icon: const Icon(Icons.attachment)),
           Expanded(
               child: TextFormField(
-            decoration: const InputDecoration.collapsed(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(30)
-                ),
-                borderSide: BorderSide.none
-              ),
-              hintText: 'Type a message'
+                controller: _textEditingController,
+                focusNode: _focusNode,
+                decoration: const InputDecoration.collapsed(
+                       border: OutlineInputBorder(
+                       borderRadius: BorderRadius.all(
+                       Radius.circular(30)
+                       ),
+                       borderSide: BorderSide.none
+                 ),
+                    hintText: 'Type a message'
             ),
           )),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              color: Theme.of(context).primaryColor
-            ),
-            margin: const EdgeInsets.all(5),
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(Icons.send,color: Colors.white,),
+          GestureDetector(
+            onTap: sendTextMessage,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: Theme.of(context).primaryColor
+              ),
+              margin: const EdgeInsets.all(5),
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(Icons.send,color: Colors.white,),
+              ),
             ),
           )
         ],

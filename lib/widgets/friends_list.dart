@@ -52,7 +52,7 @@ class FriendsList extends StatelessWidget {
                           context,
                           Constants.chatScreen,
                           arguments: {
-                            Constants.contactId : data.uid,
+                            Constants.contactUID : data.uid,
                             Constants.contactName  : data.name,
                             Constants.contactImages  : data.image,
                             Constants.groupId  : ''
