@@ -58,6 +58,8 @@ class Constants{
   static const String lastMessage = 'lastMessage';
   static const String chats = 'chats';
   static const String messages = 'messages';
+  static const String groups = 'groups';
+
 
 
 

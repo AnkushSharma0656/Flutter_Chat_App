@@ -2,6 +2,7 @@ import 'package:chatty/constants.dart';
 import 'package:chatty/models/last_message_model.dart';
 import 'package:chatty/providers/authentication_provider.dart';
 import 'package:chatty/providers/chat_provider.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,6 +48,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                           itemCount: chatsList.length,
                           itemBuilder: (context,index){
                             final chat = chatsList[index];
+                            final dateIime = formatDate(chat.timeStamp, [hh,':',nn,'',am]);
                             // check if we sent the last message
                             final isMe = chat.senderUID == uid;
                             // display the last message correctly
@@ -60,7 +62,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                               ),
                               title: Text(chat.contactName),
                               subtitle: Text(lastMessage,maxLines: 2, overflow: TextOverflow.ellipsis,),
-                              trailing: Text(chat.timeStamp.toString()),
+                              trailing: Text(dateIime),
                               onTap: (){
                                 Navigator.pushNamed(
                                     context,
