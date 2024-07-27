@@ -206,7 +206,7 @@ class ChatProvider extends ChangeNotifier{
       return _firestore
           .collection(Constants.groups)
           .doc(contactUID)
-          .collection(Constants.message)
+          .collection(Constants.messages)
           .snapshots()
           .map((snapshot) {
         return snapshot.docs.map((doc) {
@@ -219,7 +219,7 @@ class ChatProvider extends ChangeNotifier{
           .doc(userId)
           .collection(Constants.chats)
           .doc(contactUID)
-          .collection(Constants.message)
+          .collection(Constants.messages)
           .snapshots()
           .map((snapshot) {
             return snapshot.docs.map((doc) {

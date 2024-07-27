@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:chatty/utilities/assets_manager.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 void showSnackBar(BuildContext context, String message){
@@ -61,4 +63,22 @@ Future<File?> pickImage({
     }
   }
   return fileImage;
+}
+
+SizedBox buildDateTime(groupedByValue){
+  return SizedBox(
+    child: Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          formatDate(groupedByValue.timeSent, [dd,' ',M,', ',yyyy]),
+          textAlign: TextAlign.center,
+          style: GoogleFonts.openSans(
+            fontWeight: FontWeight.bold,
+          ),
+        ) ,
+      ),
+    ),
+  );
 }
