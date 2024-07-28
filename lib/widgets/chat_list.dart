@@ -1,4 +1,5 @@
 import 'package:chatty/models/message_model.dart';
+import 'package:chatty/models/message_reply_model.dart';
 import 'package:chatty/providers/authentication_provider.dart';
 import 'package:chatty/providers/chat_provider.dart';
 import 'package:chatty/utilities/global_methods.dart';
@@ -64,11 +65,35 @@ class _ChatListState extends State<ChatList> {
               final isMe = element.senderUID == uid;
               return isMe ? Padding(
                 padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                child: MyMessageWidget(message: element),
-                )
+                child: MyMessageWidget(
+                  message: element,
+                  onRightSwipe: () {
+                    // set the message reply to true
+                    final messageReply = MessageReplyModel(
+                        message: element.message,
+                        senderUID: element.senderUID,
+                        senderName: element.senderName,
+                        senderImage: element.senderImage,
+                        messageType: element.messageType,
+                        isMe: isMe
+                    );
+                    context.read<ChatProvider>().setMessageReplyModel(messageReply);
+
+                  },),)
                   : Padding(
                     padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                    child: ContactMessageWidget(message: element),
+                    child: ContactMessageWidget(message: element, onRightSwipe: () {
+                      // set the message reply to true
+                      final messageReply = MessageReplyModel(
+                          message: element.message,
+                          senderUID: element.senderUID,
+                          senderName: element.senderName,
+                          senderImage: element.senderImage,
+                          messageType: element.messageType,
+                          isMe: isMe
+                      );
+                      context.read<ChatProvider>().setMessageReplyModel(messageReply);
+                    },),
                   );
             },
             groupComparator: (value1,value2) => value2.compareTo(value1),

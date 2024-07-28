@@ -2,19 +2,20 @@ import 'package:chatty/constants.dart';
 import 'package:chatty/models/last_message_model.dart';
 import 'package:chatty/providers/authentication_provider.dart';
 import 'package:chatty/providers/chat_provider.dart';
+import 'package:chatty/utilities/global_methods.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ChatsListScreen extends StatefulWidget {
-  const ChatsListScreen({Key? key}) : super(key: key);
+class MyChatsScreen extends StatefulWidget {
+  const MyChatsScreen({Key? key}) : super(key: key);
 
   @override
-  State<ChatsListScreen> createState() => _ChatsListScreenState();
+  State<MyChatsScreen> createState() => _MyChatsScreenState();
 }
 
-class _ChatsListScreenState extends State<ChatsListScreen> {
+class _MyChatsScreenState extends State<MyChatsScreen> {
   @override
   Widget build(BuildContext context) {
     final uid = context.read<AuthenticationProvider>().userModel!.uid;
@@ -56,9 +57,11 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                             ? 'You: ${chat.message}'
                                 : chat.message;
                             return ListTile(
-                              leading: CircleAvatar(
-                                radius: 30,
-                                backgroundImage: NetworkImage(chat.contactImage),
+                              contentPadding: EdgeInsets.zero,
+                              leading: userImageWidget(
+                                  imageUrl: chat.contactImage,
+                                  radius: 40,
+                                  onTap: (){}
                               ),
                               title: Text(chat.contactName),
                               subtitle: Text(lastMessage,maxLines: 2, overflow: TextOverflow.ellipsis,),

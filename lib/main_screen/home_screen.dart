@@ -1,6 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:chatty/constants.dart';
-import 'package:chatty/main_screen/chats_list_screen.dart';
+import 'package:chatty/main_screen/my_chats_screen.dart';
 import 'package:chatty/main_screen/groups_screen.dart';
 import 'package:chatty/main_screen/people_screen.dart';
 import 'package:chatty/providers/authentication_provider.dart';
@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
   final PageController pageController = PageController(initialPage: 0);
   final List<Widget> pages = [
-    ChatsListScreen(),
+    MyChatsScreen(),
     GroupsScreen(),
     PeopleScreen()
   ];
