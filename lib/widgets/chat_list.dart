@@ -60,7 +60,7 @@ class _ChatListState extends State<ChatList> {
                   element.timeSent!.day
               );
             },
-            groupHeaderBuilder: (dynamic groupedByValue) => buildDateTime(groupedByValue),
+            groupHeaderBuilder: (dynamic groupedByValue) => SizedBox( height : 40,child: buildDateTime(groupedByValue)),
             itemBuilder: (context, dynamic element) {
               final isMe = element.senderUID == uid;
               return isMe ? Padding(
