@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ChatAppBar extends StatefulWidget {
   const ChatAppBar({Key? key,required this.contactUID}) : super(key: key);
@@ -29,7 +30,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
           return const Center(child: CircularProgressIndicator());
         }
         final userModel = UserModel.fromMap(snapshot.data!.data() as Map<String,dynamic>);
-
+        DateTime lastSeen = DateTime.fromMillisecondsSinceEpoch(int.parse(userModel.lastSeen));
         return Row(
           children: [
             userImageWidget(imageUrl: userModel.image, radius: 20, onTap: (){
@@ -37,9 +38,15 @@ class _ChatAppBarState extends State<ChatAppBar> {
             }),
             const SizedBox(width: 10,),
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(userModel.name,style: GoogleFonts.openSans(fontSize: 16),),
-                 Text('Online',style: GoogleFonts.openSans(fontSize: 12),)
+                Text(userModel.isOnline ? 'Online' : 'Last Seen ${timeago.format(lastSeen)}',
+                   style: GoogleFonts.openSans(
+                       fontSize: 12,
+                      color: userModel.isOnline ? Colors.green
+                           : Colors.grey.shade600
+                   ),)
               ],
             )
           ],

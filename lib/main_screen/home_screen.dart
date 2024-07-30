@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, TickerProviderStateMixin{
   int currentIndex = 0;
   final PageController pageController = PageController(initialPage: 0);
   final List<Widget> pages = [
@@ -25,6 +25,40 @@ class _HomeScreenState extends State<HomeScreen> {
     GroupsScreen(),
     PeopleScreen()
   ];
+  @override
+  void initState() {
+   WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch(state){
+      // user comes back to the app
+      // update user status to online
+      case AppLifecycleState.resumed:
+        context.read<AuthenticationProvider>().updateUserStatus(value : true);
+        break;
+    // app is inactive, paused, detached or hidden
+    // update user status to offline
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        context.read<AuthenticationProvider>().updateUserStatus(value : false);
+        break;
+      default:
+        // handle other states
+        break;
+    }
+    super.didChangeAppLifecycleState(state);
+  }
 
   @override
   Widget build(BuildContext context) {
