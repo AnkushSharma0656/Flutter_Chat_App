@@ -59,6 +59,8 @@ class Constants{
   static const String chats = 'chats';
   static const String messages = 'messages';
   static const String groups = 'groups';
+  static const String chatFiles = 'chatFiles';
+
 
 
 

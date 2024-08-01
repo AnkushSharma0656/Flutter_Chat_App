@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chatty/constants.dart';
 import 'package:chatty/models/last_message_model.dart';
 import 'package:chatty/models/message_model.dart';
@@ -88,6 +90,78 @@ class ChatProvider extends ChangeNotifier{
      onError(e.toString());
    }
   }
+
+  // send file message to firestore
+  Future<void> sendFileMessage({
+    required UserModel sender,
+    required String contactUID,
+    required String contactName,
+    required String contactImage,
+    required File file,
+    required MessageEnum messageType,
+    required String groupId,
+    required Function onSuccess,
+    required Function(String) onError
+})async{
+
+   try {
+     var messageId = const Uuid().v4();
+     //1. check if its a message reply and add the replied message to the message
+     String repliedMessage = _messageReplyModel?.message ?? '';
+     String repliedTo = _messageReplyModel == null
+         ? ''
+         : _messageReplyModel!.isMe
+         ? 'You'
+         : _messageReplyModel!.senderName;
+     MessageEnum repliedMessageType = _messageReplyModel?.messageType ??
+         MessageEnum.text;
+
+     // 2. upload file to firebase storage
+     final ref = '${Constants.chatFiles}/${messageType.name}/${sender
+         .uid}/$contactUID/$messageId';
+     String fileUrl = await storeFileToStorage(file: file, reference: ref);
+
+     // 3. update/set the messageModel
+     final messageModel = MessageModel(
+         senderUID: sender.uid,
+         senderName: sender.name,
+         senderImage: sender.image,
+         contactUID: contactUID,
+         message: fileUrl,
+         messageType: messageType,
+         timeSent: DateTime.now(),
+         messageId: messageId,
+         isSeen: false,
+         repliedMessage: repliedMessage,
+         repliedTo: repliedTo,
+         repliedMessageType: repliedMessageType
+     );
+
+     // 4. check if its a group message and send to group else send to contact
+     if (groupId.isNotEmpty) {
+       // handle group message
+
+     } else {
+       // handle contact message
+       await handleContactMessage(
+           messageModel: messageModel,
+           contactUID: contactUID,
+           contactName: contactName,
+           contactImage: contactImage,
+           onSuccess: onSuccess,
+           onError: onError
+       );
+
+       // set message reply model to null
+       setMessageReplyModel(null);
+     }
+   }catch(e){
+     onError(e.toString());
+   }
+
+
+
+}
 
   Future<void> handleContactMessage({
     required MessageModel messageModel,
@@ -307,5 +381,15 @@ class ChatProvider extends ChangeNotifier{
       });
     }
 }
+// store file to firestore  and return file Url
+  Future<String> storeFileToStorage({
+    required File file,
+    required String reference
+  })async{
+    UploadTask uploadTask = _firebaseStorage.ref().child(reference).putFile(file);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    String fileUrl = await taskSnapshot.ref.getDownloadURL();
+    return fileUrl;
+  }
 }
 
