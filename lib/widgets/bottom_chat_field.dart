@@ -68,9 +68,31 @@ class _BottomChatFieldState extends State<BottomChatField> {
       if(croppedFile != null){
         filePath = croppedFilePath;
         //send image message to firestore
+        sendFileMessage(messageType: MessageEnum.image);
       }
     }
 
+  }
+  // send  image to firestore
+  void sendFileMessage({required MessageEnum messageType}){
+    final  currentUser = context.read<AuthenticationProvider>().userModel!;
+    final chatProvider = context.read<ChatProvider>();
+    chatProvider.sendFileMessage(
+        sender: currentUser,
+        contactUID: widget.contactUID,
+        contactName: widget.contactName,
+        contactImage: widget.contactImage,
+        file: File(filePath),
+        messageType: messageType,
+        groupId: widget.groupId,
+        onSuccess: (){
+          _textEditingController.clear();
+          _focusNode.requestFocus();
+        },
+        onError: (error){
+          showSnackBar(context, error);
+        },
+    );
   }
   // send text message to firestore
   void sendTextMessage(){
@@ -113,15 +135,43 @@ class _BottomChatFieldState extends State<BottomChatField> {
                   : const SizedBox.shrink(),
               Row(
                 children: [
+                  chatProvider.isLoading ? const CircularProgressIndicator() :
                   IconButton(
                       onPressed: (){
                         showBottomSheet(
                             context: context,
                             builder: (context){
-                              return Container(
+                              return SizedBox(
                                 height: 200,
-                                child: const Center(
-                                  child: Text('Attachment'),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      // select image from Camera
+                                      ListTile(
+                                        leading: const Icon(Icons.camera_alt),
+                                        title: const Text('Camera'),
+                                        onTap: (){
+                                          selectImage(true);
+                                        },
+                                      ),
+                                      // select image from gallery
+                                      ListTile(
+                                        leading: const Icon(Icons.image),
+                                        title: const Text('Gallery'),
+                                        onTap: (){
+                                          selectImage(false);
+                                        },
+                                      ),
+                                      // select video file from device
+                                      ListTile(
+                                        leading: const Icon(Icons.video_library),
+                                        title: const Text('Video'),
+                                        onTap: (){
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             }
@@ -142,6 +192,7 @@ class _BottomChatFieldState extends State<BottomChatField> {
                             hintText: 'Type a message'
                         ),
                       )),
+                  chatProvider.isLoading ? const CircularProgressIndicator() :
                   GestureDetector(
                     onTap: sendTextMessage,
                     child: Container(

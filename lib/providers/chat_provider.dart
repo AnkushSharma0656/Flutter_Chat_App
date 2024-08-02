@@ -41,6 +41,8 @@ class ChatProvider extends ChangeNotifier{
    required Function onSuccess,
    required Function(String) onError
   })async{
+   setLoading(true);
+   notifyListeners();
    try{
      var messageId = const Uuid().v4();
 
@@ -103,7 +105,8 @@ class ChatProvider extends ChangeNotifier{
     required Function onSuccess,
     required Function(String) onError
 })async{
-
+    setLoading(true);
+    notifyListeners();
    try {
      var messageId = const Uuid().v4();
      //1. check if its a message reply and add the replied message to the message
@@ -268,6 +271,7 @@ class ChatProvider extends ChangeNotifier{
 
 
       // 7. call onSuccess
+      setLoading(false);
       onSuccess();
 
     }on FirebaseException catch (e){
