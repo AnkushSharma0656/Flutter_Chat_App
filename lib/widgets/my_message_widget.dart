@@ -1,7 +1,10 @@
+import 'package:chatty/constants.dart';
 import 'package:chatty/models/message_model.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_to/swipe_to.dart';
+
+import 'display_message_type.dart';
 
 class MyMessageWidget extends StatelessWidget {
   const MyMessageWidget({super.key,required this.message,required this.onRightSwipe});
@@ -33,7 +36,9 @@ class MyMessageWidget extends StatelessWidget {
             child: Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 10.0,right: 30.0,top: 5.0,bottom: 20.0),
+                  padding: message.messageType == MessageEnum.text
+                          ? const EdgeInsets.fromLTRB(10.0, 5.0, 20.0, 20.0)
+                          : const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 25.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -50,21 +55,22 @@ class MyMessageWidget extends StatelessWidget {
                               children: [
                                 Text(message.repliedTo,
                                   style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
-                                Text(
-                                  message.repliedMessage,
+                                DisplayMessageType(
+                                  message: message.repliedMessage,
+                                  type: message.messageType,
+                                  color: Colors.white,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(color: Colors.white),
                                 ),
-
                               ],
                             ),
                           )
                         )
                       ],
-                      Text(
-                        message.message,
-                        style: const TextStyle(color: Colors.white),
+                      DisplayMessageType(
+                        message: message.message,
+                        type: message.messageType,
+                        color: Colors.white,
                       ),
                     ],
                   ),

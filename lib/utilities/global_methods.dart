@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatty/utilities/assets_manager.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,7 +23,7 @@ Widget userImageWidget({
       radius: radius,
       backgroundColor: Colors.grey[300],
       backgroundImage: imageUrl.isNotEmpty
-        ? NetworkImage(imageUrl)
+        ? CachedNetworkImageProvider(imageUrl)
           : const AssetImage(AssetsManager.userImage) as ImageProvider
     ),
   );
