@@ -64,7 +64,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                                   onTap: (){}
                               ),
                               title: Text(chat.contactName),
-                              subtitle: Text(lastMessage,maxLines: 2, overflow: TextOverflow.ellipsis,),
+                              subtitle: messageToShow(type: chat.messageType, message: lastMessage),
                               trailing: Text(dateIime),
                               onTap: (){
                                 Navigator.pushNamed(
