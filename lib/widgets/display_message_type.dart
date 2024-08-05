@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatty/constants.dart';
 import 'package:flutter/material.dart';
+
+import 'audio_player_widget.dart';
 class DisplayMessageType extends StatelessWidget {
   const DisplayMessageType({
     super.key,
@@ -36,7 +38,7 @@ class DisplayMessageType extends StatelessWidget {
         case MessageEnum.video:
           return Image.network(message,fit: BoxFit.cover,);
         case MessageEnum.audio:
-          return Image.network(message,fit: BoxFit.cover,);
+          return AudioPlayerWidget(audioUrl: message,);
         default:
           return Text(
             message,

@@ -143,6 +143,9 @@ class _BottomChatFieldState extends State<BottomChatField> {
           });
         },
         onError: (error){
+          setState(() {
+            isSendingAudio = false;
+          });
           showSnackBar(context, error);
         },
     );
