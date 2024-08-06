@@ -102,6 +102,22 @@ class _BottomChatFieldState extends State<BottomChatField> {
     await cropImage(finalFileImage?.path);
     popContext();
   }
+  // select video from device
+  void selectVideo()async{
+    File? fileVideo = await pickVideo(
+        onFail: (String message){
+        showSnackBar(context, message);
+    });
+
+    popContext();
+
+    if(fileVideo != null){
+      filePath = fileVideo.path;
+      sendFileMessage(messageType: MessageEnum.video);
+    }
+
+  }
+
   void popContext() {
     Navigator.pop(context);
   }
@@ -222,8 +238,7 @@ class _BottomChatFieldState extends State<BottomChatField> {
                                       ListTile(
                                         leading: const Icon(Icons.video_library),
                                         title: const Text('Video'),
-                                        onTap: (){
-                                        },
+                                        onTap: selectVideo,
                                       ),
                                     ],
                                   ),

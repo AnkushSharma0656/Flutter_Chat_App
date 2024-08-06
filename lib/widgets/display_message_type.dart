@@ -38,12 +38,12 @@ class DisplayMessageType extends StatelessWidget {
         case MessageEnum.video:
           return Image.network(message,fit: BoxFit.cover,);
         case MessageEnum.audio:
-          return AudioPlayerWidget(audioUrl: message,);
+          return AudioPlayerWidget(audioUrl: message,color: color,);
         default:
           return Text(
             message,
-            style: const TextStyle(
-                color: Colors.white,
+            style:  TextStyle(
+                color: color,
                 fontSize: 16
             ),
             maxLines: maxLines,
