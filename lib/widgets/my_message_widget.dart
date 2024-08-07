@@ -53,12 +53,14 @@ class MyMessageWidget extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(message.repliedTo,
+                                Text(
+                                  message.repliedTo,
                                   style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
-                                DisplayMessageType(
+                                  DisplayMessageType(
                                   message: message.repliedMessage,
-                                  type: message.messageType,
+                                  type: message.repliedMessageType,
                                   color: Colors.white,
+                                  isReply: true,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -71,6 +73,7 @@ class MyMessageWidget extends StatelessWidget {
                         message: message.message,
                         type: message.messageType,
                         color: Colors.white,
+                        isReply: false,
                       ),
                     ],
                   ),
