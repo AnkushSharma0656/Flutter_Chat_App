@@ -5,6 +5,7 @@ import 'package:chatty/providers/chat_provider.dart';
 import 'package:chatty/utilities/global_methods.dart';
 import 'package:chatty/widgets/contact_message_widget.dart';
 import 'package:chatty/widgets/my_message_widget.dart';
+import 'package:chatty/widgets/reactions_dialog.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,6 +29,22 @@ class _ChatListState extends State<ChatList> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  showReactionDialog({required MessageModel message, required String uid}){
+    showDialog(
+        context: context,
+        builder: (context) => ReactionsDialog(
+            uid: uid,
+            message: message,
+            onReactionsTap: (reaction){
+
+            },
+            onContextMenu: (item){
+
+            }
+        )
+    );
   }
   @override
   Widget build(BuildContext context) {
@@ -91,23 +108,28 @@ class _ChatListState extends State<ChatList> {
 
               // check if we sent the last message
               final isMe = element.senderUID == uid;
-              return isMe ? Padding(
-                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                child: MyMessageWidget(
-                  message: element,
-                  onRightSwipe: () {
-                    // set the message reply to true
-                    final messageReply = MessageReplyModel(
-                        message: element.message,
-                        senderUID: element.senderUID,
-                        senderName: element.senderName,
-                        senderImage: element.senderImage,
-                        messageType: element.messageType,
-                        isMe: isMe
-                    );
-                    context.read<ChatProvider>().setMessageReplyModel(messageReply);
+              return isMe ? InkWell(
+                onLongPress: (){
+                  showReactionDialog(message: element, uid: uid);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                  child: MyMessageWidget(
+                    message: element,
+                    onRightSwipe: () {
+                      // set the message reply to true
+                      final messageReply = MessageReplyModel(
+                          message: element.message,
+                          senderUID: element.senderUID,
+                          senderName: element.senderName,
+                          senderImage: element.senderImage,
+                          messageType: element.messageType,
+                          isMe: isMe
+                      );
+                      context.read<ChatProvider>().setMessageReplyModel(messageReply);
 
-                  },),)
+                    },),),
+              )
                   : Padding(
                     padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
                     child: ContactMessageWidget(message: element, onRightSwipe: () {

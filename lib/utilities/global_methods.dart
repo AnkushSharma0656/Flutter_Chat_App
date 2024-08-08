@@ -158,3 +158,19 @@ Widget messageToShow({required MessageEnum type, required String message}){
 
   }
 }
+
+List<String> reactions=[
+  '👍',
+  '❤️',
+  '😂',
+  '😮',
+  '😡',
+  '➕'
+];
+
+// list of context menu for reply, copy and delete
+List<String> contextMenu = [
+  'Reply',
+  'Copy',
+  'Delete'
+];
