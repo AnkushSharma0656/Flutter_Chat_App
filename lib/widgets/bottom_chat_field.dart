@@ -5,6 +5,7 @@ import 'package:chatty/providers/authentication_provider.dart';
 import 'package:chatty/providers/chat_provider.dart';
 import 'package:chatty/utilities/global_methods.dart';
 import 'package:chatty/widgets/message_reply_preview.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -35,6 +36,39 @@ class _BottomChatFieldState extends State<BottomChatField> {
   bool isRecording = false;
   bool isShowSendButton = false;
   bool isSendingAudio = false;
+  bool isShowEmojiPicker = false;
+
+  // hide emoji container
+  void hideEmojiContainer(){
+    setState(() {
+      isShowEmojiPicker = false;
+    });
+  }
+
+  // show emoji container
+  void showEmojiContainer(){
+    setState(() {
+      isShowEmojiPicker = true;
+    });
+  }
+  // show keyboard
+  void showKeyboard(){
+    _focusNode.requestFocus();
+  }
+  // hide keyboard
+  void hideKeyboard(){
+    _focusNode.unfocus();
+  }
+  // toggle emoji and keyboard container
+  void toggleEmojiKeyboardContainer(){
+    if(isShowEmojiPicker){
+      showKeyboard();
+      hideEmojiContainer();
+    }else{
+      hideEmojiContainer();
+      showEmojiContainer();
+    }
+  }
 
   @override
   void initState() {
@@ -194,105 +228,134 @@ class _BottomChatFieldState extends State<BottomChatField> {
       builder: (context,chatProvider,child){
         final messageReply = chatProvider.messageReplyModel;
         final isMessageReply = messageReply != null;
-        return Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              color: Theme.of(context).cardColor,
-              border: Border.all(color: Theme.of(context).colorScheme.primary)
-          ),
-          child: Column(
-            children: [
-              isMessageReply
-                  ? const MessageReplyPreview()
-                  : const SizedBox.shrink(),
-              Row(
+        return Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: Theme.of(context).cardColor,
+                  border: Border.all(color: Theme.of(context).colorScheme.primary)
+              ),
+              child: Column(
                 children: [
-                  IconButton(
-                      onPressed: isSendingAudio ? null : (){
-                        showBottomSheet(
-                            context: context,
-                            builder: (context){
-                              return SizedBox(
-                                height: 200,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      // select image from Camera
-                                      ListTile(
-                                        leading: const Icon(Icons.camera_alt),
-                                        title: const Text('Camera'),
-                                        onTap: (){
-                                          selectImage(true);
-                                        },
+                  isMessageReply
+                      ? const MessageReplyPreview()
+                      : const SizedBox.shrink(),
+                  Row(
+                    children: [
+                      // emoji button
+                      IconButton(
+                          onPressed: toggleEmojiKeyboardContainer,
+                          icon: Icon(isShowEmojiPicker? Icons.keyboard_alt :  Icons.emoji_emotions_outlined)
+                      ),
+                      IconButton(
+                          onPressed: isSendingAudio ? null : (){
+                            showBottomSheet(
+                                context: context,
+                                builder: (context){
+                                  return SizedBox(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // select image from Camera
+                                          ListTile(
+                                            leading: const Icon(Icons.camera_alt),
+                                            title: const Text('Camera'),
+                                            onTap: (){
+                                              selectImage(true);
+                                            },
+                                          ),
+                                          // select image from gallery
+                                          ListTile(
+                                            leading: const Icon(Icons.image),
+                                            title: const Text('Gallery'),
+                                            onTap: (){
+                                              selectImage(false);
+                                            },
+                                          ),
+                                          // select video file from device
+                                          ListTile(
+                                            leading: const Icon(Icons.video_library),
+                                            title: const Text('Video'),
+                                            onTap: selectVideo,
+                                          ),
+                                        ],
                                       ),
-                                      // select image from gallery
-                                      ListTile(
-                                        leading: const Icon(Icons.image),
-                                        title: const Text('Gallery'),
-                                        onTap: (){
-                                          selectImage(false);
-                                        },
-                                      ),
-                                      // select video file from device
-                                      ListTile(
-                                        leading: const Icon(Icons.video_library),
-                                        title: const Text('Video'),
-                                        onTap: selectVideo,
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  );
+                                }
+                            );
+                          },
+                          icon: const Icon(Icons.attachment)),
+                      Expanded(
+                          child: TextFormField(
+                            controller: _textEditingController,
+                            focusNode: _focusNode,
+                            decoration: const InputDecoration.collapsed(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(30)
+                                    ),
+                                    borderSide: BorderSide.none
                                 ),
-                              );
-                            }
-                        );
-                      },
-                      icon: const Icon(Icons.attachment)),
-                  Expanded(
-                      child: TextFormField(
-                        controller: _textEditingController,
-                        focusNode: _focusNode,
-                        decoration: const InputDecoration.collapsed(
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(30)
-                                ),
-                                borderSide: BorderSide.none
+                                hintText: 'Type a message'
                             ),
-                            hintText: 'Type a message'
+                            onChanged: (value){
+                              setState(() {
+                                isShowSendButton = value.isNotEmpty;
+                              });
+                            },
+                            onTap: (){
+                              hideEmojiContainer();
+                            },
+                          )),
+                      chatProvider.isLoading ? const Padding(
+                        padding:  EdgeInsets.all(8.0),
+                        child:  CircularProgressIndicator(),
+                      ) :
+                      GestureDetector(
+                        onTap: isShowSendButton? sendTextMessage : null,
+                        onLongPress: isShowSendButton?  null : startRecording,
+                        onLongPressUp: stopRecording,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: Colors.deepPurple
+                          ),
+                          margin: const EdgeInsets.all(5),
+                          child:  Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: isShowSendButton
+                                ? const Icon(Icons.arrow_upward,color: Colors.white,)
+                                : const Icon(Icons.mic,color: Colors.white,)
+                          ),
                         ),
-                        onChanged: (value){
-                          setState(() {
-                            isShowSendButton = value.isNotEmpty;
-                          });
-                        },
-                      )),
-                  chatProvider.isLoading ? const Padding(
-                    padding:  EdgeInsets.all(8.0),
-                    child:  CircularProgressIndicator(),
-                  ) :
-                  GestureDetector(
-                    onTap: isShowSendButton? sendTextMessage : null,
-                    onLongPress: isShowSendButton?  null : startRecording,
-                    onLongPressUp: stopRecording,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: Colors.deepPurple
-                      ),
-                      margin: const EdgeInsets.all(5),
-                      child:  Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: isShowSendButton
-                            ? const Icon(Icons.arrow_upward,color: Colors.white,)
-                            : const Icon(Icons.mic,color: Colors.white,)
-                      ),
-                    ),
-                  )
+                      )
+                    ],
+                  ),
                 ],
               ),
-            ],
-          ),
+            ),
+            isShowEmojiPicker
+            ?SizedBox(
+              height: 280,
+              child: EmojiPicker(
+                onEmojiSelected: (category, Emoji emoji){
+
+                  _textEditingController.text =
+                      _textEditingController.text + emoji.emoji;
+                  if(!isShowSendButton){
+                    isShowSendButton = true;
+                  }
+                },
+                onBackspacePressed: (){
+                  _textEditingController.text = _textEditingController.text.characters.skipLast(1).toString();
+                },
+              ),
+            ):SizedBox.shrink()
+          ],
         );
       },
     );

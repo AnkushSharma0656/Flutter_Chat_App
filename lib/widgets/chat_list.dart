@@ -8,6 +8,7 @@ import 'package:chatty/widgets/my_message_widget.dart';
 import 'package:chatty/widgets/reactions_dialog.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +32,30 @@ class _ChatListState extends State<ChatList> {
     super.dispose();
   }
 
+  void onContextMenuClicked({required String item,required MessageModel message}){
+    switch (item){
+      case 'Reply':
+      // set the message reply to true
+        final messageReply = MessageReplyModel(
+            message: message.message,
+            senderUID: message.senderUID,
+            senderName: message.senderName,
+            senderImage: message.senderImage,
+            messageType: message.messageType,
+            isMe: true
+        );
+        context.read<ChatProvider>().setMessageReplyModel(messageReply);
+        break;
+      case 'Copy':
+        // copy message to clipboard
+        Clipboard.setData(ClipboardData(text: message.message));
+        showSnackBar(context, 'Message copied to clipboard');
+        break;
+      case 'Delete':
+        break;
+    }
+  }
+
   showReactionDialog({required MessageModel message, required String uid}){
     showDialog(
         context: context,
@@ -38,10 +63,19 @@ class _ChatListState extends State<ChatList> {
             uid: uid,
             message: message,
             onReactionsTap: (reaction){
-
+            Navigator.pop(context);
+            print('pressed $reaction');
+            // if its a plus reaction show bottom with emoji keyboard
+              if(reaction  ==  '➕'){
+                // TODO show emoji keyboard
+              }else{
+                // TODO add reaction to message
+                //context.read<ChatProvider>().addReactionToMessage(reaction: reaction, message: message);
+              }
             },
             onContextMenu: (item){
-
+              Navigator.pop(context);
+              onContextMenuClicked(item: item, message: message);
             }
         )
     );
