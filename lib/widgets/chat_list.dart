@@ -6,6 +6,7 @@ import 'package:chatty/utilities/global_methods.dart';
 import 'package:chatty/widgets/contact_message_widget.dart';
 import 'package:chatty/widgets/my_message_widget.dart';
 import 'package:chatty/widgets/reactions_dialog.dart';
+import 'package:chatty/widgets/stacked_reactions.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,11 +57,11 @@ class _ChatListState extends State<ChatList> {
     }
   }
 
-  showReactionDialog({required MessageModel message, required String uid}){
+  showReactionDialog({required MessageModel message, required bool isMe}){
     showDialog(
         context: context,
         builder: (context) => ReactionsDialog(
-            uid: uid,
+            isMyMessage : isMe,
             message: message,
             onReactionsTap: (reaction){
             Navigator.pop(context);
@@ -142,42 +143,56 @@ class _ChatListState extends State<ChatList> {
 
               // check if we sent the last message
               final isMe = element.senderUID == uid;
-              return isMe ? InkWell(
-                onLongPress: (){
-                  showReactionDialog(message: element, uid: uid);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                  child: MyMessageWidget(
-                    message: element,
-                    onRightSwipe: () {
-                      // set the message reply to true
-                      final messageReply = MessageReplyModel(
-                          message: element.message,
-                          senderUID: element.senderUID,
-                          senderName: element.senderName,
-                          senderImage: element.senderImage,
-                          messageType: element.messageType,
-                          isMe: isMe
-                      );
-                      context.read<ChatProvider>().setMessageReplyModel(messageReply);
+              return isMe ? Stack(
+                children: [
+                  InkWell(
+                    onLongPress: (){
+                      showReactionDialog(message: element, isMe : isMe);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0,bottom: 20.0),
+                      child: MyMessageWidget(
+                        message: element,
+                        onRightSwipe: () {
+                          // set the message reply to true
+                          final messageReply = MessageReplyModel(
+                              message: element.message,
+                              senderUID: element.senderUID,
+                              senderName: element.senderName,
+                              senderImage: element.senderImage,
+                              messageType: element.messageType,
+                              isMe: isMe
+                          );
+                          context.read<ChatProvider>().setMessageReplyModel(messageReply);
 
-                    },),),
+                        },),),
+                      ),
+                  Positioned(
+                      bottom: 4,
+                      right: 90,
+                      child: StackedReactionWidget(message: element, size: 20, onTap: () {  },)
+                  )
+                ],
               )
-                  : Padding(
-                    padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                    child: ContactMessageWidget(message: element, onRightSwipe: () {
-                      // set the message reply to true
-                      final messageReply = MessageReplyModel(
-                          message: element.message,
-                          senderUID: element.senderUID,
-                          senderName: element.senderName,
-                          senderImage: element.senderImage,
-                          messageType: element.messageType,
-                          isMe: isMe
-                      );
-                      context.read<ChatProvider>().setMessageReplyModel(messageReply);
-                    },),
+                  : InkWell(
+                    onLongPress: (){
+                      showReactionDialog(message: element, isMe : isMe);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                      child: ContactMessageWidget(message: element, onRightSwipe: () {
+                        // set the message reply to true
+                        final messageReply = MessageReplyModel(
+                            message: element.message,
+                            senderUID: element.senderUID,
+                            senderName: element.senderName,
+                            senderImage: element.senderImage,
+                            messageType: element.messageType,
+                            isMe: isMe
+                        );
+                        context.read<ChatProvider>().setMessageReplyModel(messageReply);
+                      },),
+                    ),
                   );
             },
             groupComparator: (value1,value2) => value2.compareTo(value1),
