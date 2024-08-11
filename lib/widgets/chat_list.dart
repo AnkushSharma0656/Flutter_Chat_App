@@ -174,25 +174,34 @@ class _ChatListState extends State<ChatList> {
                   )
                 ],
               )
-                  : InkWell(
-                    onLongPress: (){
-                      showReactionDialog(message: element, isMe : isMe);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                      child: ContactMessageWidget(message: element, onRightSwipe: () {
-                        // set the message reply to true
-                        final messageReply = MessageReplyModel(
-                            message: element.message,
-                            senderUID: element.senderUID,
-                            senderName: element.senderName,
-                            senderImage: element.senderImage,
-                            messageType: element.messageType,
-                            isMe: isMe
-                        );
-                        context.read<ChatProvider>().setMessageReplyModel(messageReply);
-                      },),
-                    ),
+                  : Stack(
+                    children: [
+                      InkWell(
+                        onLongPress: (){
+                          showReactionDialog(message: element, isMe : isMe);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0,bottom: 25.0),
+                          child: ContactMessageWidget(message: element, onRightSwipe: () {
+                            // set the message reply to true
+                            final messageReply = MessageReplyModel(
+                                message: element.message,
+                                senderUID: element.senderUID,
+                                senderName: element.senderName,
+                                senderImage: element.senderImage,
+                                messageType: element.messageType,
+                                isMe: isMe
+                            );
+                            context.read<ChatProvider>().setMessageReplyModel(messageReply);
+                          },),
+                        ),
+                      ),
+                      Positioned(
+                          bottom: 4,
+                          right: 250,
+                          child: StackedReactionWidget(message: element, size: 20, onTap: () {  },)
+                      )
+                    ],
                   );
             },
             groupComparator: (value1,value2) => value2.compareTo(value1),
