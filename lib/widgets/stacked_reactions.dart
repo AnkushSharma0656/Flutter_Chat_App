@@ -11,8 +11,8 @@ class StackedReactionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reactionToShow = reactions.length > 5 ? reactions.sublist(0,5) : reactions;
-    final remainingReactions = reactions.length - reactionToShow.length;
+    final reactionToShow = message.reactions.length > 5 ? message.reactions.sublist(0,5) : message.reactions;
+    final remainingReactions = message.reactions.length - reactionToShow.length;
 
   final allReaction =  reactions.asMap().map((index, reaction) {
       final value = Container(
@@ -69,7 +69,7 @@ class StackedReactionWidget extends StatelessWidget {
                       padding: const EdgeInsets.all(2),
                       child: Text(
                           '$remainingReactions',
-                        style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16,color: Colors.black),
                       ),
                     ),
                   ),

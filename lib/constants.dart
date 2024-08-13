@@ -53,6 +53,7 @@ class Constants{
   static const String repliedTo = 'repliedTo';
   static const String repliedMessageType = 'repliedMessageType';
   static const String isMe = 'isMe';
+  static const String reactions = 'reactions';
 
 
   static const String lastMessage = 'lastMessage';

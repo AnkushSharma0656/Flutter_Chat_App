@@ -13,6 +13,7 @@ class MessageModel{
   final String repliedMessage;
   final String repliedTo;
   final MessageEnum repliedMessageType;
+  final List<String> reactions;
   MessageModel({
     required this.senderUID,
     required this.senderName,
@@ -26,6 +27,7 @@ class MessageModel{
     required this.repliedMessage,
     required this.repliedTo,
     required this.repliedMessageType,
+    required this.reactions
   });
 
   Map<String,dynamic> toMap(){
@@ -42,6 +44,7 @@ class MessageModel{
       Constants.repliedMessage : repliedMessage,
       Constants.repliedTo : repliedTo,
       Constants.repliedMessageType : repliedMessageType.name,
+      Constants.reactions: reactions
     };
   }
 
@@ -59,7 +62,8 @@ factory MessageModel.fromMap(Map<String,dynamic>map){
         isSeen: map[Constants.isSeen] ?? false,
         repliedMessage: map[Constants.repliedMessage] ?? '',
         repliedTo: map[Constants.repliedTo] ?? '',
-        repliedMessageType: map[Constants.repliedMessageType].toString().toMessageEnum()
+        repliedMessageType: map[Constants.repliedMessageType].toString().toMessageEnum(),
+        reactions: List<String>.from(map[Constants.reactions] ?? [])
     );
 }
  copyWith({required String userId}){
@@ -75,7 +79,8 @@ factory MessageModel.fromMap(Map<String,dynamic>map){
         isSeen: isSeen,
         repliedMessage: repliedMessage,
         repliedTo: repliedTo,
-        repliedMessageType: repliedMessageType
+        repliedMessageType: repliedMessageType,
+        reactions: reactions
     );
  }
 }

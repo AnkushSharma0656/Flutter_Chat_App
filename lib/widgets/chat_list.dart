@@ -197,7 +197,7 @@ class _ChatListState extends State<ChatList> {
                         ),
                       ),
                       Positioned(
-                          bottom: 4,
+                          bottom: 0,
                           right: 250,
                           child: StackedReactionWidget(message: element, size: 20, onTap: () {  },)
                       )
